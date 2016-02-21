@@ -23,6 +23,7 @@ func main() {
 	var (
 		name string
 	)
+	fmt.Println("Querying Data")
 	rows, err := db.Query("select name from hi")
 	if err != nil {
 		fmt.Printf("Query Err: %v\n", err)
@@ -38,5 +39,27 @@ func main() {
 	err = rows.Err()
 	if err != nil {
 		log.Printf("Rows err %s\n", err)
+	}
+
+	// Modifying Data
+	fmt.Println("Modifying Data")
+	stmt, err := db.Prepare("INSERT INTO hi(name) VALUES(?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	res, err := stmt.Exec("Not dolly")
+	if err != nil {
+		log.Fatal(err)
+	}
+	rowCnt, err := res.RowsAffected()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Affected = %d\n", rowCnt)
+
+	fmt.Println("Deleting rows")
+	_, err = db.Exec("DELETE FROM hi")
+	if err != nil {
+		log.Fatal(err)
 	}
 }
